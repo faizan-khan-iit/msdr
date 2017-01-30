@@ -1,0 +1,53 @@
+The results for 100 runs with n=10:
+
+Factorial_loop
+Unit: microseconds
+               expr   min    lq    mean median    uq    max neval
+ Factorial_loop(10) 5.987 6.415 7.62567  6.843 7.271 25.659   100
+
+Factorial_func
+Unit: microseconds
+               expr    min     lq    mean median    uq    max neval
+ Factorial_func(10) 24.804 25.232 25.6813 25.233 25.66 45.332   100
+
+Factorial_reduce
+Unit: microseconds
+                 expr    min     lq     mean median     uq     max neval
+ Factorial_reduce(10) 53.457 56.023 60.33412 56.879 60.942 150.535   100
+
+Factorial_mem
+Unit: microseconds
+              expr   min   lq    mean median    uq    max neval
+ Factorial_mem(10) 5.132 5.56 6.53949   5.56 5.988 79.117   100
+
+######################################################################
+
+The results for 100 runs each with n=5,10,15... ,70:
+
+Factorial_loop
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   4628   10990   19880   19060   26400   31030 
+
+Factorial_func
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  12820   60690  102200  104900  148900  206300 
+
+Factorial_reduce
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  40600   99840  157900  162400  227900  294200 
+
+Factorial_mem
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2336    6201    6287    6356    6824    8032 
+
+#######################################################################
+
+Clearly, Memoisation and Looping methods are much better for computing factorials than Recursion and Reduce, which do worse as 'n' keeps increasing.
+
+For this run:
+
+Memoisation < Looping < Recursion < Reduce
+
+with Memoisation being the best and Reduce being the worst.
+
+#######################################################################

@@ -25,7 +25,7 @@ factorial_loop <- function(n=10){
 # factorial using the reduce() function in the purrr package.
 # Alternatively, you can use the Reduce() function in the base package.
 mul <- function(x, y){
-  return(x*y)
+  return(as.numeric(x)*as.numeric(y))
 }
 factorial_reduce <- function(n=10){
   ans <- 1
@@ -50,15 +50,17 @@ factorial_recur <- function(n=10){
 }
 
 # Factorial_mem: a version that uses memoization to compute the factorial.
-factorial_vals <- c(1, rep(NA, 20))
+factorial_vals <- c(1, rep(NA, 70))
 
 factorial_mem <- function(n=10){
-  if(n<=0){
-    message("n <= 0, no factorials")
+  if(n<0){
+    message("n < 0, no factorials")
     return(NA)
-  }else if(n>20){
-    message("0 < n < 21")
+  }else if(n>70){
+    message("0 <= n <= 70")
     return(NA)
+  }else if(n==0){
+    return(1)
   }else if(!is.na(factorial_vals[n])){
     factorial_vals[n]
   }else{
@@ -77,29 +79,28 @@ recur_sum <- microbenchmark(factorial_recur(10))
 reduce_sum <- microbenchmark(factorial_reduce(10))
 mem_sum <- microbenchmark(factorial_mem(10))
 
-memo_data <- map(1:12,
+# Edit range of n for different results
+range_n <- seq(5, 70, 5)
+memo_data <- map(range_n,
                  function(x){microbenchmark(factorial_mem(x))$time})
-names(memo_data) <- paste0(letters[1:12], 1:12)
 memo_data <- sapply(memo_data, mean)
 
-recur_data <- map(1:12,
+recur_data <- map(range_n,
                  function(x){microbenchmark(factorial_recur(x))$time})
-names(recur_data) <- paste0(letters[1:12], 1:12)
 recur_data <- sapply(recur_data, mean)
 
-reduce_data <- map(1:12,
+reduce_data <- map(range_n,
                  function(x){microbenchmark(factorial_reduce(x))$time})
-names(reduce_data) <- paste0(letters[1:12], 1:12)
 reduce_data <- sapply(reduce_data, mean)
 
-loop_data <- map(1:12,
+loop_data <- map(range_n,
                  function(x){microbenchmark(factorial_loop(x))$time})
-names(loop_data) <- paste0(letters[1:12], 1:12)
 loop_data <- sapply(loop_data, mean)
 
 data_combined <- data.frame(time=c(memo_data, recur_data, reduce_data, loop_data),
-                            n=rep(1:12, 4),
-                            method=c(rep(c("Memoisation", "Recursion", "Reduce", "Loop"), each=12)))
+                            n=rep(range_n, 4),
+                            method=c(rep(c("Memoisation", "Recursion", "Reduce", "Loop"),
+                                         each=length(range_n))))
 comparison_plot_new <- ggplot(data=data_combined) +
   geom_point(aes(n, time, colour=method)) +
   geom_line(aes(n, time, colour=method)) +
