@@ -1,5 +1,6 @@
 library(purrr)
 library(microbenchmark)
+library(ggplot2)
 # For this Part you will need to write four different versions
 # of the Factorial function:
 # 
@@ -96,9 +97,10 @@ loop_data <- map(1:12,
 names(loop_data) <- paste0(letters[1:12], 1:12)
 loop_data <- sapply(loop_data, mean)
 
-comparison_plot <- ggplot() +
-  geom_point(aes(names(memo_data), memo_data), colour="red") +
-  geom_point(aes(names(recur_data), recur_data), colour="blue") +
-  geom_point(aes(names(reduce_data), reduce_data), colour="green") +
-  geom_point(aes(names(loop_data), loop_data), colour="yellow")+
+data_combined <- data.frame(time=c(memo_data, recur_data, reduce_data, loop_data),
+                            n=rep(1:12, 4),
+                            method=c(rep(c("Memoisation", "Recursion", "Reduce", "Loop"), each=12)))
+comparison_plot_new <- ggplot(data=data_combined) +
+  geom_point(aes(n, time, colour=method)) +
+  geom_line(aes(n, time, colour=method)) +
   xlab("n") + ylab("Time")
