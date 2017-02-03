@@ -1,0 +1,66 @@
+library(data.table)
+
+x <- make_LD(data)
+
+print(class(x))
+[1] "LongitudinalData" "data.frame"      
+
+
+print(x)
+Longitudinal dataset with 10 subjects
+
+
+## Subject 10 doesn't exist
+out <- subject(x, 10)
+print(out)
+NULL
+
+
+out <- subject(x, 14)
+print(out)
+Subject ID:  14
+
+
+out <- subject(x, 54) %>% summary
+print(out)
+ID:  54 
+  visit        room     value
+1     0 living room  2.792601
+2     0      office 13.255475
+3     1         den 13.450946
+4     1      office  4.533921
+5     2     bedroom  4.193721
+6     2         den  3.779225
+
+
+out <- subject(x, 14) %>% summary
+print(out)
+ID:  14 
+  visit         room     value
+1     0      bedroom  4.786592
+2     0  living room  2.750000
+3     1      bedroom  3.401442
+4     1 family  room  8.426549
+5     2      bedroom 18.583635
+6     2  living room 22.550694
+
+out <- subject(x, 44) %>% visit(0) %>% room("bedroom")
+print(out)
+ID:  44 
+Visit:  0 
+Room:  bedroom
+
+
+## Show a summary of the pollutant values
+out <- subject(x, 44) %>% visit(0) %>% room("bedroom") %>% summary
+print(out)
+ID:  44 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    8.0    30.0    51.0    88.8    80.0   911.0 
+
+
+out <- subject(x, 44) %>% visit(1) %>% room("living room") %>% summary
+print(out)
+ID:  44 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2.75   14.00   24.00   41.37   37.00 1607.00
