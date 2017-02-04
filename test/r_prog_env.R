@@ -69,3 +69,20 @@ data_used %>%
   select(Team, Budget, Standing) %>%
   rename(BudgetInMillions = Budget) %>%
   head(5)
+
+# Gather and Spread
+data("VADeaths")
+
+VADeaths %>%
+  tbl_df() %>%
+  mutate(age = row.names(VADeaths)) %>%
+  gather(key = key, value = death_rate, -age)
+
+data_used %>%
+  group_by(Group, Pool) %>%
+  summarise(avgBudget = mean(Budget),
+            minBudget = min(Budget),
+            maxBudget = max(Budget)) %>%
+  select(Group, Pool, avgBudget) %>%
+  spread(Pool, avgBudget)
+
