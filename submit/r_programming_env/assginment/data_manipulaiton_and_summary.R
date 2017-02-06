@@ -2,12 +2,16 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(readxl)
-library(data.table)
 
 ## read in data
-dspec <- read_csv("./data/daily_SPEC_2014.csv.bz2") %>%
-  data.table()
-aqs_sites <- read_excel("./data/aqs_sites.xlsx")
+dspec <- read_csv("./data/daily_SPEC_2014.csv.bz2",
+                  col_types = c("ccc--dd-c--D----d-------c----"))
+
+cols_excel <- rep("blank", 28) # Skip these columns
+cols_excel[c(1:3, 8,9,23)] <- "text"
+cols_excel[4:5] <- "numeric"
+aqs_sites <- read_excel("./data/aqs_sites.xlsx",
+                        col_types = cols_excel)
 
 # What is average Arithmetic.Mean for "Bromine PM2.5 LC" in
 # the state of Wisconsin in this dataset?
@@ -140,3 +144,78 @@ ans8[ans8$meanVal == max(ans8$meanVal), "Mo"]
 # (this monitor is in California). At this monitor, for how many 
 # days is the sum of "Sulfate PM2.5 LC" and "Total Nitrate PM2.5 LC"
 # greater than 10?
+temp5 <- dspec %>%
+  rename(PN = `Parameter Name`,
+         SC = `State Code`,
+         CC = `County Code`,
+         SN = `Site Num`,
+         AM = `Arithmetic Mean`,
+         DL = `Date Local`) %>%
+  select(PN, SC, CC, SN, AM, DL) %>%
+  filter(SC == "06" &
+         CC == "065" &
+         SN == "8001" &
+         PN %in% c("Sulfate PM2.5 LC")) %>%
+  group_by(DL) %>%
+  summarise(sumAM1 = mean(AM),
+            n = n())
+
+temp6 <- dspec %>%
+  rename(PN = `Parameter Name`,
+         SC = `State Code`,
+         CC = `County Code`,
+         SN = `Site Num`,
+         AM = `Arithmetic Mean`,
+         DL = `Date Local`) %>%
+  select(PN, SC, CC, SN, AM, DL) %>%
+  filter(SC == "06" &
+           CC == "065" &
+           SN == "8001" &
+           PN %in% c("Total Nitrate PM2.5 LC")) %>%
+  group_by(DL) %>%
+  summarise(sumAM2 = mean(AM),
+            n = n())
+
+ans9 <- full_join(temp5, temp6, by="DL") %>%
+  group_by(DL) %>%
+  mutate(AM = sum(sumAM1, sumAM2, na.rm = T))
+ans9[ans9$AM > 10, ]
+
+
+# Which monitoring site in the dataset has the highest correlation
+# between "Sulfate PM2.5 LC" and "Total Nitrate PM2.5 LC" across all
+# dates? Identify the monitoring site by its State, County, and 
+# Site Number code
+# For each of the chemical constituents, there will be some dates that
+# have multiple Sample.Values at a monitoring site. When there are 
+# multiple values on a given date, take the average of the constituent
+# values for that date
+
+temp7 <- dspec %>%
+  rename(PN = `Parameter Name`,
+         SC = `State Code`,
+         CC = `County Code`,
+         SN = `Site Num`,
+         AM = `Arithmetic Mean`,
+         DL = `Date Local`) %>%
+  select(PN, SC, CC, SN, AM, DL) %>%
+  filter(PN %in% c("Sulfate PM2.5 LC")) %>%
+  group_by(SC, CC, SN, DL) %>%
+  mutate(meanAM1 = mean(AM))
+
+temp8 <- dspec %>%
+  rename(PN = `Parameter Name`,
+         SC = `State Code`,
+         CC = `County Code`,
+         SN = `Site Num`,
+         AM = `Arithmetic Mean`,
+         DL = `Date Local`) %>%
+  select(PN, SC, CC, SN, AM, DL) %>%
+  filter(PN %in% c("Total Nitrate PM2.5 LC")) %>%
+  group_by(SC, CC, SN, DL) %>%
+  mutate(meanAM2 = mean(AM))
+
+ans10 <- inner_join(temp7, temp8, by = c("SC", "CC", "SN", "DL")) %>%
+  group_by(SC, CC, SN) %>%
+  summarise(corAM = cor(meanAM1, meanAM2))
+ans10[ans10$corAM == max(ans10$corAM), ]
