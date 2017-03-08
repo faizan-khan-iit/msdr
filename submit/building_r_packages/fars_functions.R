@@ -3,7 +3,7 @@
 #' Loads a CSV file defined by \code{filename} argument and returns the data
 #' as a data frame tibble. Ends with an error if filename is not valid
 #'
-#' @param filename Path to the CSV file (character)
+#' @param filename Path to the CSV file (\code{character}) 
 #'
 #' @return The function returns a tibble (data.frame) based on the CSV file.
 #'
@@ -36,9 +36,9 @@ fars_read <- function(filename) {
 #' If coercion is not possible, it shows a warning message
 #'
 #' @param year A vector or list indicating the years for which filenames
-#' are to returned
+#' are to be returned. Coerced to \code{integer}
 #'
-#' @return Returns a character vector in a format "accident_<year>.csv.bz2" that
+#' @return Returns a \code{character} vector in a format "accident_<year>.csv.bz2" that
 #' can be used as file names
 #'
 #' @details Works for all input that can be coerced to integers. \code{NA}s are
@@ -64,9 +64,10 @@ make_filename <- function(year) {
 #' Read data for years into a list of data frame tables
 #'
 #' This function reads data for the years provided and it returns
-#' a list containing the data frame tables.
+#' a list containing the data frame tables. The output contains the data
+#' for all the months of the specified years.
 #'
-#' @param years A numeric vector of years for which data is to be read
+#' @param years A \code{numeric} vector of years for which data is to be read
 #'
 #' @return A list of data frame tables. For invalid inputs, a warning message is printed
 #' and returns \code{NULL}.
@@ -98,7 +99,7 @@ fars_read_years <- function(years) {
 #' This function summarizes the list of data frames obtained using (\code{fars_read_years}).
 #' The information about the number of cases per year every month is returned.
 #'
-#' @param years A numeric vector of years for which data is to be summarized
+#' @param years A \code{numeric} vector of years for which data is to be summarized
 #'
 #' @return Summarized data in a data frame table(\code{tbl_df})
 #'
@@ -126,8 +127,8 @@ fars_summarize_years <- function(years) {
 #' of the accidents on a map. An invalid state number or year results in an error.
 #'
 #' @param state.num The number of a state in the US as per the FARS data
-#' sets. Coerced to integer
-#' @param year The year for which data is to be plotted. Coerced to integer
+#' sets. Coerced to \code{integer}
+#' @param year The year for which data is to be plotted. Coerced to \code{integer}
 #'
 #' @return A plot of the accidents for the \code{state.num} and
 #' \code{year} provided. Returns \code{NULL} for invalid input
